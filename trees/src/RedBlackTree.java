@@ -2,6 +2,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 
 class RedBlackTree<K extends Comparable<K>, V> implements OrderedMap<K, V> {
@@ -80,6 +81,45 @@ class RedBlackTree<K extends Comparable<K>, V> implements OrderedMap<K, V> {
     @Override
     public void put(K key, V value) {
         root = put(root, key, value);
+
+        System.out.println("Root color: " + (root.color ? "red" : "black"));
+    }
+
+
+    public void deleteMin() {
+        throw new NotImplementedException();
+    }
+
+
+    private Node deleteMin(Node node) {
+        throw new NotImplementedException();
+    }
+
+
+    public void deleteMax() {
+        if (isEmpty()) throw new NoSuchElementException("Tree underflow");
+        root = deleteMax(root);
+    }
+
+    private Node deleteMax(Node node) {
+        // borrow red node from left to right, temporarily destroying the left leaning invariant
+        if (isRed(node.left)) {
+            node = rotateRight(node);
+        }
+        // reached max node, delete it
+        if (node.right == null) {
+            return null;
+        }
+        // borrow red from siblings
+        if (!isRed(node.right) && !isRed(node.right.left)) {
+            node = moveRedRight(node);
+        }
+
+        // move down the tree to delete max
+        node.right = deleteMax(node.right);
+        // restore left leaning property
+        return balance(node);
+
     }
 
     @Override
@@ -138,15 +178,14 @@ class RedBlackTree<K extends Comparable<K>, V> implements OrderedMap<K, V> {
         else if (cmp > 0) n.right = put(n.right, key, value);
         else n.value = value;
         // ...then, adjust R-B colors
-        if (isRed(n.right) && !isRed(n.left)) n = rotateLeft(n);
-        if (isRed(n.left) && isRed(n.left.left)) n = rotateRight(n);
-        if (isRed(n.left) && isRed(n.right)) flipColors(n);
-        n.count = 1 + size(n.left) + size(n.right);
+        n = balance(n);
         return n;
     }
 
+    /* HELPER METHODS */
+
     private boolean isRed(Node n) {
-        return n != null && n != root && n.color == RED;
+        return n != null && n.color == RED;
     }
 
     private Node rotateLeft(Node h) {
@@ -177,12 +216,32 @@ class RedBlackTree<K extends Comparable<K>, V> implements OrderedMap<K, V> {
     }
 
     private void flipColors(Node h) {
-        assert !isRed(h);
-        assert isRed(h.left);
-        assert isRed(h.right);
-        h.color = RED;
-        h.left.color = BLACK;
-        h.right.color = BLACK;
+        System.out.println("Flip colors");
+        assert (isRed(h) && !isRed(h.left) && !isRed(h.right)) || (!isRed(h) && isRed(h.left) && isRed(h.right));
+        h.color = !h.color;
+        h.left.color = !h.left.color;
+        h.right.color = !h.right.color;
+    }
+
+    private Node balance(Node h) {
+        // assert (h != null);
+        if (isRed(h.right)) h = rotateLeft(h);
+        if (isRed(h.left) && isRed(h.left.left)) h = rotateRight(h);
+        if (isRed(h.left) && isRed(h.right)) flipColors(h);
+
+        h.count = size(h.left) + size(h.right) + 1;
+        return h;
+    }
+
+    private Node moveRedRight(Node h) {
+        flipColors(h);
+        System.out.println("Left is red:" + isRed(h.left) + " Right is red: " + isRed(h.right));
+        if (isRed(h.left.left)) {
+            h = rotateRight(h);
+            System.out.println("Left is red:" + isRed(h.left) + " Right is red: " + isRed(h.right));
+            flipColors(h);
+        }
+        return h;
     }
 
     private void inOrderTraversal(Node n, Traverser<Node> t) {
@@ -191,6 +250,59 @@ class RedBlackTree<K extends Comparable<K>, V> implements OrderedMap<K, V> {
         t.traverse(n);
         inOrderTraversal(n.right, t);
     }
+
+    /* Integrity verification methods */
+
+    public boolean is23() {
+        return is23(root);
+    }
+
+    private boolean is23(Node n) {
+        if (n == null) return true;
+        boolean notRightLeaning = !isRed(n.right);
+        boolean noTwoRedLinks = !(n.color == RED && isRed(n.left));
+        return notRightLeaning && noTwoRedLinks && is23(n.left) && is23(n.right);
+    }
+
+    public boolean isBalanced() {
+        // find min node to count its number of black links
+        if (isEmpty()) return true;
+        Node n = root;
+        int blackCount = 0;
+        while(n.left != null) {
+            if (!isRed(n.left)) blackCount++;
+            n = n.left;
+        }
+        return isBalanced(root, blackCount);
+    }
+
+    private boolean isBalanced(Node n, int blackCount) {
+        // reached null so parent is a leaf and it called isBalanced
+        if (n == null) return blackCount == -1;
+        boolean leftBalanced =  isBalanced(n.left,  isRed(n.left)  ? blackCount : blackCount - 1);
+        boolean rightBalanced = isBalanced(n.right, isRed(n.right) ? blackCount : blackCount - 1);
+        return leftBalanced && rightBalanced;
+    }
+
+    public boolean isBST() {
+        return isBST(root);
+    }
+
+    private boolean isBST(Node n) {
+        if (n == null) return true;
+        boolean is = true;
+        if (n.left != null) is = n.key.compareTo(n.left.key) > 0;
+        if (n.right != null) is = is && n.key.compareTo(n.right.key) < 0;
+        return is;
+    }
+
+    public boolean isRedBlackTree() {
+        return isBST() && isBalanced() && is23();
+    }
+
+
+
+
 
     private class Node {
         Node left, right;

@@ -6,6 +6,7 @@ import java.util.Queue;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class RedBlackTreeTest {
     @Test
@@ -41,6 +42,7 @@ public class RedBlackTreeTest {
         assertEquals(new Character('B'), b.ceil('A'));
         assertEquals(new Character('B'), b.min());
         assertEquals(new Character('S'), b.max());
+        assert(b.is23());
     }
 
     @Test
@@ -62,6 +64,26 @@ public class RedBlackTreeTest {
         values.add(4);
         assertArrayEquals(keys.toArray(),  b.keys().toArray());
         assertArrayEquals(values.toArray(),  b.values().toArray());
+    }
+
+    @Test
+    public void validationTest() {
+        RedBlackTree<Integer, Integer> b = new RedBlackTree<>();
+        b.put(2, 2); // root
+        b.put(1, 1); // left, will be red first
+        assertTrue(b.isBalanced());
+        b.put(3, 3); // right, will be also red but will be fixed by flipping colors
+        assertTrue(b.isRedBlackTree());
+        b.put(-1, -1); // will become a red node on the very left and will still be balanced
+        assertTrue(b.isRedBlackTree());
+        b.put(-2, -2); // will add another minimum, get rotated right and colors fliped
+        assertTrue(b.isRedBlackTree());
+        b.deleteMax(); // try a delete!
+        assertTrue(b.isRedBlackTree());
+        b.deleteMax(); // try again
+        assertTrue(b.isRedBlackTree());
+        b.deleteMax(); // ..and again
+        assertTrue(b.isRedBlackTree());
 
     }
 }
