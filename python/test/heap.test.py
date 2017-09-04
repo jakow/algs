@@ -17,10 +17,7 @@ class HeapTest(unittest.TestCase):
         items = [1, 2, 8, 13, 4, 6, 20, 6, 25]
         for item in items:
             heap.insert(item)
-
         self.assertEqual(heap.front(), 25)
-
-
 
     def test_len(self):
         """
@@ -83,6 +80,16 @@ class HeapTest(unittest.TestCase):
         heap.insert(4)
         heap.insert(0)
         self.assertEqual(0, heap.front())
+
+    def test_del_idx(self):
+        heap = Heap(type='min')
+        numbers = [1, 9, 22, 17, 11, 33, 27, 21, 19]
+        for n in numbers:
+            heap.insert(n)
+        self.assertEqual([None, 1, 9, 22, 17, 11, 33, 27, 21, 19], heap.arr)
+        heap.del_idx(6) # 33
+        self.assertEqual([None, 1, 9, 19, 17, 11, 22, 27, 21], heap.arr)
+
 
 
 if __name__ == '__main__':

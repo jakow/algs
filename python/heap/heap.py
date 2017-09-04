@@ -43,13 +43,27 @@ class Heap(object):
           - The largest element of a max heap queue
           - The smallest element of a min heap queue
         """
-        if not self.length:
+        return self.del_idx(1)
+
+    def del_idx(self, idx):
+        """
+        Remove item at a given index of the heap queue array
+        """
+        if idx > self.length:
             raise Exception('No such element')
-        max_value = self.arr[1]
-        self._swap(1, self.length)
+        self._swap(idx, self.length)
         self.length = self.length - 1
-        self._sink(1)
-        return max_value
+        value = self.arr.pop()
+
+        # if we are at root or the idx's parent is larger than idx,
+        # we sink the new (recently swapped) value
+        if idx == 1 or self._less(idx, idx / 2):
+            self._sink(idx)
+        # if idx is larger than its parent, we restore heap order 
+        # up the tree
+        else:
+            self._swim(idx)
+        return value
 
     def front(self):
         """
