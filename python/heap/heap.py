@@ -32,6 +32,11 @@ class Heap(object):
         return 'Heap ' + str(self.arr)
     
     def del_front(self):
+        """
+        Remove and return the front element of the heap queue, that is:
+          - The largest element of a max heap queue
+          - The smallest element of a min heap queue
+        """
         if not self.length:
             raise Exception('No such element')
         max_value = self.arr[1]
