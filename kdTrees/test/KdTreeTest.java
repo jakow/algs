@@ -91,4 +91,32 @@ public class KdTreeTest {
             assertTrue(tree.contains(p));
         }
     }
+
+    @Test
+    public void nearestTest() {
+        KdTree pointTree = new KdTree();
+        pointTree.insert(new Point2D(0.3, 0.4));
+        pointTree.insert(new Point2D(0.4, 0.4));
+        pointTree.insert(new Point2D(0.2, 0.4));
+        pointTree.insert(new Point2D(0.5, 0.5));
+        pointTree.insert(new Point2D(0.1, 0.1));
+        pointTree.insert(new Point2D(0.7, 0.9));
+        PointSET pointSet = new PointSET();
+        pointSet.insert(new Point2D(0.3, 0.4));
+        pointSet.insert(new Point2D(0.4, 0.4));
+        pointSet.insert(new Point2D(0.2, 0.4));
+        pointSet.insert(new Point2D(0.5, 0.5));
+        pointSet.insert(new Point2D(0.1, 0.1));
+        pointSet.insert(new Point2D(0.7, 0.9));
+        Point2D[] testPoints = new Point2D[]{
+                new Point2D(0.1, 0.1),
+                new Point2D(0.4, 0.4),
+                new Point2D(0.4, 0.4),
+                new Point2D(0.5, 0.5),
+        };
+        for (Point2D p : testPoints) {
+            assertEquals(pointSet.nearest(p), pointTree.nearest(p));
+        }
+
+    }
 }

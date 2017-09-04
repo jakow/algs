@@ -40,58 +40,104 @@ public class KdTree {
 
     public void insert(Point2D p) {
         if (p == null) throw new IllegalArgumentException();
-        root = insert(root, p, X_COORD);
+        root = insert(root, p, X_COORD, 0, 0, 1, 1);
     }
 
-    private Node insert(Node n, Point2D point, boolean coordinate) {
+    private Node insert(Node n, Point2D point, boolean coordinate, double xmin, double ymin, double xmax, double ymax) {
         if (n == null) {
             sz++;
-            return new Node(point, coordinate);
+            return new Node(point, coordinate, new RectHV(xmin, ymin, xmax, ymax));
         }
         double key = keyOf(point, coordinate);
         int comp = Double.compare(key, keyOf(n));
         if (comp < 0) {
-            n.left = insert(n.left, point, !coordinate);
+            // restrict the rectangle to the left
+            xmax = coordinate == X_COORD ? n.point.x() : xmax;
+            ymax = coordinate == Y_COORD ? n.point.y() : ymax;
+            n.left = insert(n.left, point, !coordinate, xmin, ymin, xmax, ymax);
         } else { // assume no duplicates
-            if (n.point.equals(point)) throw new IllegalArgumentException("Duplicate point detected");
-            n.right = insert(n.right, point, !coordinate);
+            xmin = coordinate == X_COORD ? n.point.x() : xmin;
+            ymin = coordinate == Y_COORD ? n.point.y() : ymin;
+            n.right = insert(n.right, point, !coordinate, xmin, ymin, xmax, ymax);
         }
         return n;
     }
 
+
     public Point2D nearest(Point2D query) {
-        if (query == null) throw new IllegalArgumentException();
-        if (root == null) return null;
-        return nearest(root, query, root.point);
+        if (query == null) throw new IllegalArgumentException("Nearest neighbour query is null");
+        return nearest2(root, query);
     }
 
-    private Point2D nearest(Node node, Point2D query, Point2D best) {
-        if (node == null) return best;
-        // distance to null is positive infinity
-        double bestDist = best.distanceSquaredTo(query);
-        double newDist = distance(node, query);
-        if (newDist < bestDist) {
-            best = node.point;
+    private Point2D nearest(Node n, Point2D query, Point2D best) {
+        if (n == null) return best;
+        double currentDist = distance(best, query);
+        double newDist = distance(n.point, query);
+        if (newDist <= currentDist) {
+            best = n.point;
+            currentDist = newDist;
         }
-        // now
-        double diff = node.coordinate == X_COORD ? query.x() - node.point.x() : query.y() - node.point.y();
-        int cmp = (int) Math.signum(diff);
-        if (diff < 0) {
-            // go left/bottom first
-            best = nearest(node.left, query, best);
+        // which node to search first?
+        double cmp = keyOf(query, n.coordinate) - keyOf(n);
+        Node first, second;
+        if (cmp < 0) {
+            // search bottom/left first
+            first = n.left;
+            second = n.right;
         } else {
-            best = nearest(node.left, query, best);
-            // go right first
+            // search top/right first
+            first = n.right;
+            second = n.left;
+        }
+        if (first != null && first.rect.distanceSquaredTo(query) < currentDist) {
+            best = nearest(first, query, best);
+            currentDist = distance(best, query);
+        }
+        if (second != null && second.rect.distanceSquaredTo(query) < currentDist) {
+            best = nearest(first, query, best);
         }
         return best;
-
     }
 
-    private static double distance(Node node, Point2D query) {
-        if (node == null || query == null) {
+    private Point2D nearest2(Node n, Point2D query) {
+//        if (n == null) return null;
+        Point2D best = n.point;
+        double bestDistance = distance(query, best);
+        // go left or right of the tree depending on the splitting coordinate
+        Node first, second;
+        // is the query left/bottom (<0) or right/top (>0) of the splitting point?
+        double cmp = keyOf(query, n.coordinate) - keyOf(n);
+        if (cmp < 0) { // query is less
+            first = n.left;
+            second = n.right;
+        } else {
+            first = n.right;
+            second = n.left;
+        }
+        if (first != null) {
+            Point2D firstBest = nearest2(first, query);
+            if (distance(firstBest, query) < distance(best, query)) {
+                best = firstBest;
+                bestDistance = distance(query, best);
+            }
+        }
+        // From wiki: comparison to see whether the distance between the splitting coordinate of the query point
+        // and current node is lesser than the distance (overall coordinates) from the query point to the current best
+        double splitDistance = Math.pow(cmp, 2);
+        if (second != null && splitDistance < bestDistance) {
+            Point2D secondBest = nearest2(second, query);
+            if (distance(secondBest, query) < distance(best, query)) {
+                best = secondBest;
+            }
+        }
+        return best;
+    }
+
+    private static double distance(Point2D p1, Point2D p2) {
+        if (p1 == null || p2 == null) {
             return Double.POSITIVE_INFINITY;
         } else {
-            return node.point.distanceSquaredTo(query);
+            return p1.distanceSquaredTo(p2);
         }
     }
 
@@ -101,19 +147,19 @@ public class KdTree {
         return points;
     }
 
-    private void range(Node node, RectHV rect, Set<Point2D> points) {
+    private void range(Node node, RectHV query, Set<Point2D> points) {
         if (node == null) return;
 //        StdOut.println("Range " + rect + " on point " + node.point);
-        if (rect.contains(node.point)) {
+        if (query.contains(node.point)) {
             points.add(node.point);
         }
         // does the rectangle lie (fully or partially)  on the left/bottom side of this partition?
-        if (rectMin(rect, node) < keyOf(node.point, node.coordinate)) {
-            range(node.left, rect, points);
+        if (node.left != null && node.left.rect.intersects(query)) {
+            range(node.left, query, points);
         }
         // does the rectangle lie on the right/top side of this partition?
-        if (rectMax(rect, node) > keyOf(node.point, node.coordinate)) {
-          range(node.right, rect, points);
+        if (node.right != null && node.right.rect.intersects(query)) {
+          range(node.right, query, points);
         }
     }
 
@@ -131,14 +177,6 @@ public class KdTree {
 
     private static double valueOf(Node n) {
         return valueOf(n.point, n.coordinate);
-    }
-
-    private static double rectMax(RectHV rect, Node n) {
-        return n.coordinate == X_COORD ? rect.xmax() : rect.ymax();
-    }
-
-    private static double rectMin(RectHV rect, Node n) {
-        return n.coordinate == X_COORD ? rect.xmin() : rect.ymin();
     }
 
     public void draw() {
@@ -178,10 +216,12 @@ public class KdTree {
         Node left, right;
         boolean coordinate;
         Point2D point;
+        RectHV rect;
 
-        Node(Point2D point, boolean coordinate) {
+        Node(Point2D point, boolean coordinate, RectHV rect) {
             this.point = point;
             this.coordinate = coordinate;
+            this.rect = rect;
         }
 
         double key() {
