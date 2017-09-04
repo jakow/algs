@@ -31,6 +31,12 @@ class Heap(object):
     def __repr__(self):
         return 'Heap ' + str(self.arr)
     
+    def __nonzero__(self):
+        return self.length
+
+    def is_empty(self):
+        return self.length == 0
+    
     def del_front(self):
         """
         Remove and return the front element of the heap queue, that is:
