@@ -1,9 +1,10 @@
 /**
  * Created by jakub on 22/01/2017.
  */
-public class QuickUnionUF extends UnionFind {
+public class QuickUnionUF implements UnionFind {
     private int[] parent;
     private int[] size;
+
     public QuickUnionUF(int N) {
         parent = new int[N];
         size = new int[N];
@@ -12,7 +13,8 @@ public class QuickUnionUF extends UnionFind {
             size[i] = 1;
         }
     }
-    void union(int p, int q) {
+
+    public void union(int p, int q) {
         // new root of P is the root of Q
         int pRoot = root(p);
         int qRoot = root(q);
@@ -27,7 +29,7 @@ public class QuickUnionUF extends UnionFind {
         parent[root(p)] = root(q);
     }
 
-    boolean connected(int p, int q) {
+    public boolean connected(int p, int q) {
         return root(p) == root(q);
     }
     private int root(int p) {

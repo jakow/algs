@@ -1,14 +1,16 @@
 /**
  * Created by jakub on 22/01/2017.
  */
-public class QuickFindUF extends UnionFind {
+public class QuickFindUF implements UnionFind {
     private int[] id;
+
     public QuickFindUF(int N) {
         id = new int[N];
         for (int i = 0; i < N; ++i) {
             id[i] = i;
         }
     }
+
     public void union(int p, int q) {
         int pid = id[p];
         int qid = id[q];
@@ -16,6 +18,7 @@ public class QuickFindUF extends UnionFind {
             if (id[i] == pid) id[i] = qid;
         }
     }
+
     public boolean connected(int p, int q) {
         return id[p] == id[q];
     }

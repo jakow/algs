@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/huffmanCoding.iml" filepath="$PROJECT_DIR$/.idea/modules/huffmanCoding.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/huffmanCoding_main.iml" filepath="$PROJECT_DIR$/.idea/modules/huffmanCoding_main.iml" group="huffmanCoding" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/huffmanCoding_test.iml" filepath="$PROJECT_DIR$/.idea/modules/huffmanCoding_test.iml" group="huffmanCoding" />
+    </modules>
+  </component>
+</project>
