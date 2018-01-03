@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/knapsack.iml" filepath="$PROJECT_DIR$/.idea/modules/knapsack.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/sequenceAlignment.iml" filepath="$PROJECT_DIR$/.idea/modules/sequenceAlignment.iml" />
     </modules>
   </component>
 </project>
