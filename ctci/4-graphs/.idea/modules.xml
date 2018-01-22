@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/4-graphs.iml" filepath="$PROJECT_DIR$/.idea/modules/4-graphs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/4-graphs_main.iml" filepath="$PROJECT_DIR$/.idea/modules/4-graphs_main.iml" group="4-graphs" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/4-graphs_test.iml" filepath="$PROJECT_DIR$/.idea/modules/4-graphs_test.iml" group="4-graphs" />
+    </modules>
+  </component>
+</project>

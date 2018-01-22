@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/2.4-partition.iml" filepath="$PROJECT_DIR$/.idea/modules/2.4-partition.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/2.4-partition_main.iml" filepath="$PROJECT_DIR$/.idea/modules/2.4-partition_main.iml" group="2.4-partition" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/2.4-partition_test.iml" filepath="$PROJECT_DIR$/.idea/modules/2.4-partition_test.iml" group="2.4-partition" />
+    </modules>
+  </component>
+</project>
