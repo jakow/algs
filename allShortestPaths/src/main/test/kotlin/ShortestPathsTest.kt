@@ -6,7 +6,7 @@ import io.kotlintest.specs.StringSpec
 
 class ShortestPathsTest : StringSpec() {
     init {
-        "should do stuff" {
+        "calculates basic shortest paths" {
             val g = NetworkBuilder
                     .directed()
                     .allowsSelfLoops(false)
@@ -26,6 +26,10 @@ class ShortestPathsTest : StringSpec() {
                     "C" to 3,
                     "D" to 6
             )
+        }
+
+        "throws when detecting negative cycles" {
+
         }
     }
 }

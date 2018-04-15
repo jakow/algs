@@ -1,5 +1,3 @@
-import com.google.common.collect.BiMap
-import com.google.common.collect.HashBiMap
 import com.google.common.graph.Network
 import kotlin.math.min
 
@@ -13,7 +11,7 @@ fun <T> shortestPaths(graph: Network<T, Int>, source: T): Map<T, Int> {
     }
 
     // build 2d array for dp, will optimize later
-    val dp = Array(sz, {  IntArray(sz) { Int.MAX_VALUE } })
+    val dp = Array(sz + 1, {  IntArray(sz) { Int.MAX_VALUE } })
     for (i in 0 until sz) {
         dp[0][i] = Int.MAX_VALUE
     }
@@ -21,11 +19,17 @@ fun <T> shortestPaths(graph: Network<T, Int>, source: T): Map<T, Int> {
     val srcIdx = nodes.indexOf(source)
     dp[0][srcIdx] = 0
 
-    for (i in 1 until sz) {
+    for (i in 1..sz) {
         for (v in 0 until sz) {
             val node = nodes[v]
             val minOfNodes = minOfConnectingNodes(dp, graph, node, i - 1, nodeIndices)
             dp[i][v] = min(dp[i - 1][v], minOfNodes)
+        }
+    }
+    // negative cycle detect
+    for (idx in 0 until sz) {
+        if (dp[sz - 1][idx] != dp[sz][idx]) {
+            throw IllegalArgumentException("Cycle detected")
         }
     }
     val results = dp[sz - 1]
