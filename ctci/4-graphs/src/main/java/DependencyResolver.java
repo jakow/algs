@@ -1,8 +1,10 @@
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Created by jakub on 20/01/2018.
+ * TODO work in progress
  */
 public class DependencyResolver {
     private enum Status {
@@ -10,13 +12,12 @@ public class DependencyResolver {
         RESOLVING,
     }
     public static List<Package> resolve(List<Package> packages) {
-        Map<Package, Status>
-        for (Package p : packages) {
-
-        }
+        Map<Package, Status> status = new HashMap<>();
+        return new ArrayList<>();
     }
 
     public static List<Package> resolve(List<String> packageNames, List<String[]> dependencies) {
         // build the dependency graph
+        return new ArrayList<>();
     }
 }
