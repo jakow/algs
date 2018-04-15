@@ -78,8 +78,8 @@ public class Knapsack {
         for (int i = 0; i <= weights.length; ++i) {
             totalValues[i][0] = 0;
         }
-        for (int item = 1; item <= weights.length; ++item) {
-            for (int currentWeight = 1; currentWeight <= maxWeight; ++currentWeight) {
+        for (int currentWeight = 1; currentWeight <= maxWeight; ++currentWeight) {
+            for (int item = 1; item <= weights.length; ++item) {
                 int ifSkipped = totalValues[item - 1][currentWeight];
                 int itemIndex = item - 1;
                 int ifIncluded = 0;
